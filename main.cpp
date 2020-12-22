@@ -8,21 +8,92 @@
 enum GameState {START,RUNNING,COLLIDED};
 enum PlayerState {STILL,RUN,JUMP,FALL,DEAD};
 
-
-PlayerState playerState = STILL;
-
 class Dinosour{
 
+private:
+
     PlayerState playerState = STILL;
+    float jumpHeight = 0;
+    float bco[21][2][2] = {{{50,110},{60,130}},{{50,110},{70,100}},{{50,100},{80,70}},{{60,90},{140,60}},{{70,70},{150,50}},
+    {{80,60},{120,40}},{{90,40},{110,50}},{{90,40},{100,30}},{{90,30},{110,20}},{{125,60},{135,20}},{{125,20},{145,30}},{{100,100},{160,70}},
+    {{110,110},{170,80}},{{170,120},{120,110}},{{130,120},{170,150}},{{170,150},{190,120}},{{180,160},{140,150}},{{170,112},{185,117}},
+    {{170,100},{180,90}},{{180,100},{190,85}},{{157,150},{150,145}}};
+    bool rightFoot = true;
+
+    public:
 
     void renderBody(){
+    int i;
+
+    glColor3f(0,0,0);
+    for(i=0;i<20;++i){
+
+        if(!(i>5 && i<11)){
+            glBegin(GL_POLYGON);
+            glVertex2f(bco[i][0][0],bco[i][1][1]+jumpHeight);
+            glVertex2f(bco[i][1][0],bco[i][1][1]+jumpHeight);
+            glVertex2f(bco[i][1][0],bco[i][0][1]+jumpHeight);
+            glVertex2f(bco[i][0][0],bco[i][0][1]+jumpHeight);
+            glEnd();
+        }
+    }
+
+    glColor3f(1,.62,0.129);
+
+    glBegin(GL_POLYGON);
+    glVertex2f(bco[i][0][0],bco[i][1][1]+jumpHeight);
+    glVertex2f(bco[i][1][0],bco[i][1][1]+jumpHeight);
+    glVertex2f(bco[i][1][0],bco[i][0][1]+jumpHeight);
+    glVertex2f(bco[i][0][0],bco[i][0][1]+jumpHeight);
+    glEnd();
+
+    renderLegs();
 
     }
 
     void renderLegs(){
+        int i=0;
+        for(i=6;i<11;i++){
+            glColor3f(0,0,0);
+            printf("HERE");
 
+            bool liftFoot = (i>5&&i<9&&rightFoot)|(i>8&&i<11&&!rightFoot);
+            float liftHeight = jumpHeight+(liftFoot?10:0);
+
+            glBegin(GL_POLYGON);
+            glVertex2f(bco[i][0][0],bco[i][1][1]+liftHeight);
+            glVertex2f(bco[i][1][0],bco[i][1][1]+liftHeight);
+            glVertex2f(bco[i][1][0],bco[i][0][1]+liftHeight);
+            glVertex2f(bco[i][0][0],bco[i][0][1]+liftHeight);
+            glEnd();
+
+        }
+
+        if(playerState != STILL)
+            if(rightFoot)
+                rightFoot = false;
+            else
+                rightFoot = true;
+    }
+
+    void setJumpHeight(float height){
+        jumpHeight = height;
+    }
+
+    float getJumpHeight(){
+        return jumpHeight;
+    }
+
+    void setPlayerState(PlayerState state){
+        playerState = state;
+    }
+
+    PlayerState getPlayerState(){
+        return playerState;
     }
 };
+
+Dinosour dino;
 
 float jumpHeight = 0;
 float MAX_HEIGHT = 240;
@@ -69,8 +140,6 @@ void display(){
     glVertex2f(80,520);
     glVertex2f(40,520);
     glEnd();
-
-    // break
 
     glBegin(GL_POLYGON);
     glVertex2f(350,510);
@@ -213,18 +282,9 @@ void display(){
 
     glColor3f(.44,0.20,0.27);
 
-    /*
-    glBegin(GL_POLYGON);
-    glVertex2f(-30,200);
-    glVertex2f(1080,200);
-    glVertex2f(1080,20);
-    glVertex2f(-30,20);
-    glEnd();
-    */
-
-        int buildingStart = -30;
-        int buildingHeight = 0;
-        int buildingWidth = 0;
+    int buildingStart = -30;
+    int buildingHeight = 0;
+    int buildingWidth = 0;
 
     for(int i=0;buildingStart<=1080;++i){
         buildingWidth = (10 + rand()% 50);
@@ -240,165 +300,7 @@ void display(){
         buildingStart += buildingWidth;
     }
 
-    glColor3f(0,0,0);
-    // glColor3f(.019,.62,.50);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(50,110+jumpHeight);
-    glVertex2f(50,130+jumpHeight);
-    glVertex2f(60,130+jumpHeight);
-    glVertex2f(60,110+jumpHeight);
-    glEnd();
-
-   // glColor3f(.019,.62,.40);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(50,110+jumpHeight);
-    glVertex2f(70,110+jumpHeight);
-    glVertex2f(70,100+jumpHeight);
-    glVertex2f(50,100+jumpHeight);
-    glEnd();
-
- //   glColor3f(.019,.62,.30);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(50,100+jumpHeight);
-    glVertex2f(80,100+jumpHeight);
-    glVertex2f(80,70+jumpHeight);
-    glVertex2f(50,70+jumpHeight);
-    glEnd();
-
- //   glColor3f(.019,.62,.20);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(60,90+jumpHeight);
-    glVertex2f(140,90+jumpHeight);
-    glVertex2f(140,60+jumpHeight);
-    glVertex2f(60,60+jumpHeight);
-    glEnd();
-
-  //  glColor3f(.019,.62,.10);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(70,70+jumpHeight);
-    glVertex2f(150,70+jumpHeight);
-    glVertex2f(150,50+jumpHeight);
-    glVertex2f(70,50+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(80,60+jumpHeight);
-    glVertex2f(120,60+jumpHeight);
-    glVertex2f(120,40+jumpHeight);
-    glVertex2f(80,40+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(90,40+jumpHeight);
-    glVertex2f(110,40+jumpHeight);
-    glVertex2f(110,50+jumpHeight);
-    glVertex2f(90,50+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(90,30+jumpHeight);
-    glVertex2f(100,30+jumpHeight);
-    glVertex2f(100,40+jumpHeight);
-    glVertex2f(90,40+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(90,30+jumpHeight);
-    glVertex2f(110,30+jumpHeight);
-    glVertex2f(110,20+jumpHeight);
-    glVertex2f(90,20+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(125,60+jumpHeight);
-    glVertex2f(135,60+jumpHeight);
-    glVertex2f(135,20+jumpHeight);
-    glVertex2f(125,20+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(125,30+jumpHeight);
-    glVertex2f(145,30+jumpHeight);
-    glVertex2f(145,20+jumpHeight);
-    glVertex2f(125,20+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(100,100+jumpHeight);
-    glVertex2f(160,100+jumpHeight);
-    glVertex2f(160,70+jumpHeight);
-    glVertex2f(100,70+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(110,110+jumpHeight);
-    glVertex2f(170,110+jumpHeight);
-    glVertex2f(170,80+jumpHeight);
-    glVertex2f(110,80+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(120,120+jumpHeight);
-    glVertex2f(170,120+jumpHeight);
-    glVertex2f(170,110+jumpHeight);
-    glVertex2f(120,110+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(130,150+jumpHeight);
-    glVertex2f(170,150+jumpHeight);
-    glVertex2f(170,120+jumpHeight);
-    glVertex2f(130,120+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(170,150+jumpHeight);
-    glVertex2f(190,150+jumpHeight);
-    glVertex2f(190,120+jumpHeight);
-    glVertex2f(170,120+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(180,160+jumpHeight);
-    glVertex2f(140,160+jumpHeight);
-    glVertex2f(140,150+jumpHeight);
-    glVertex2f(180,150+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(170,112+jumpHeight);
-    glVertex2f(185,112+jumpHeight);
-    glVertex2f(185,117+jumpHeight);
-    glVertex2f(170,117+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(170,100+jumpHeight);
-    glVertex2f(180,100+jumpHeight);
-    glVertex2f(180,90+jumpHeight);
-    glVertex2f(170,90+jumpHeight);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(180,100+jumpHeight);
-    glVertex2f(190,100+jumpHeight);
-    glVertex2f(190,85+jumpHeight);
-    glVertex2f(180,85+jumpHeight);
-    glEnd();
-
-    glColor3f(1,.62,0.129);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(157,150+jumpHeight);
-    glVertex2f(157,145+jumpHeight);
-    glVertex2f(150,145+jumpHeight);
-    glVertex2f(150,150+jumpHeight);
-    glEnd();
+    dino.renderBody();
 
     glColor3f(.34,.52,.69);
     glBegin(GL_POLYGON);
@@ -426,33 +328,38 @@ void display(){
 
 void keyboard(unsigned char key,int x,int y){
 
-    printf("%c",key);
+    if(key == ' ' && dino.getPlayerState() != JUMP && dino.getPlayerState() != FALL){
+        dino.setPlayerState(JUMP);
+    }
 
-    if(key == ' ' && playerState != JUMP && playerState != FALL)
-        playerState = JUMP;
+    if(dino.getPlayerState() == STILL){
+            dino.setPlayerState(RUN);
+    }
 }
 
 void idle(){
-    if(playerState == JUMP && jumpHeight >= MAX_HEIGHT){
-        jumpHeight -= .5;
-        playerState = FALL;
+    if(dino.getPlayerState() == JUMP && dino.getJumpHeight() >= MAX_HEIGHT){
+        dino.setJumpHeight(dino.getJumpHeight() + .8);
+        dino.setPlayerState(FALL);
     }
 
-    if(playerState == FALL && jumpHeight <= 0){
-        jumpHeight = 0;
-        playerState = RUN;
+    if(dino.getPlayerState() == FALL && dino.getJumpHeight() <= 0){
+        dino.setJumpHeight(0);
+        dino.setPlayerState(RUN);
     }
 
-    if(playerState == JUMP){
-        jumpHeight += .5;
+    if(dino.getPlayerState() == JUMP){
+        dino.setJumpHeight(dino.getJumpHeight() + .8);
         glutPostRedisplay();
     }
 
-    if(playerState == FALL){
-        jumpHeight -= .5;
+    if(dino.getPlayerState() == FALL){
+        dino.setJumpHeight(dino.getJumpHeight() - .8);
         glutPostRedisplay();
     }
 
+    if(dino.getPlayerState() == RUN)
+        glutPostRedisplay();
 }
 
 int main(int argc,char **argv){
