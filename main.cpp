@@ -1,23 +1,96 @@
-#include<windows.h>
+// #include<windows.h>
 #include <GL/glut.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
+#include <math.h>
+// #include <conio.h>
 #include <time.h>
 
 enum GameState {START,RUNNING,COLLIDED};
 enum PlayerState {STILL,RUN,JUMP,FALL,DEAD};
+
+class Car{
+private:
+    int marginBottom = 50, marginLeft = 1280;
+    float carBody[18][2] = {
+        {0, 0},
+        {0, 3},
+        {7.5, 12},
+        {45, 15},
+        {105, 37.5},
+        {180, 37.5},
+        {202.5, 22.5},
+        {225, 18},
+        {229.5, 10.5},
+        {229.5, 0},
+        //front windshield
+        {56, 17},
+        {101, 33},
+        {137, 33},
+        {137, 17},
+        //rear windshield
+        {140, 17},
+        {140, 33},
+        {172.5, 33},
+        {192, 17}
+    };
+
+    float carWheels[2][3] = {
+        {60, 0, 12},
+        {202.5, 2, 14}
+    };
+
+public:
+    void render(){
+        glBegin(GL_POLYGON);
+        glColor3f(1, 0, 0);
+        for(int i = 0; i < 10; i ++){
+            glVertex2f(marginLeft + carBody[i][0], marginBottom + carBody[i][1]);
+        }
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(0.65, 0.73, 0.96);
+        for(int i = 10; i < 14; i++){
+            glVertex2f(marginLeft + carBody[i][0], marginBottom + carBody[i][1]);
+        }
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(0.65, 0.73, 0.96);
+        for(int i = 14; i < 18; i++){
+            glVertex2f(marginLeft + carBody[i][0], marginBottom + carBody[i][1]);
+        }
+        glEnd();
+        renderWheel(marginLeft + carWheels[0][0], marginBottom + carWheels[0][1], carWheels[0][2]);
+        renderWheel(marginLeft + carWheels[1][0], marginBottom + carWheels[1][1], carWheels[1][2]);
+        glEnd();
+        glFlush();
+    }
+
+    void renderWheel(int x, int y, int r){
+        float theta;
+        glBegin(GL_POLYGON);
+        glColor3f(0,0,0);
+        for(int i = 0; i < 360; i++){
+            theta = i * (3.1416 / 180);
+            glVertex2f(x + r * cos(theta), y + r * sin(theta));
+        }
+        glEnd();
+    }
+
+};
 
 class Dinosour{
 
 private:
 
     PlayerState playerState = STILL;
+
     float jumpHeight = 0;
     float bco[21][2][2] = {{{50,110},{60,130}},{{50,110},{70,100}},{{50,100},{80,70}},{{60,90},{140,60}},{{70,70},{150,50}},
     {{80,60},{120,40}},{{90,40},{110,50}},{{90,40},{100,30}},{{90,30},{110,20}},{{125,60},{135,20}},{{125,20},{145,30}},{{100,100},{160,70}},
     {{110,110},{170,80}},{{170,120},{120,110}},{{130,120},{170,150}},{{170,150},{190,120}},{{180,160},{140,150}},{{170,112},{185,117}},
     {{170,100},{180,90}},{{180,100},{190,85}},{{157,150},{150,145}}};
+
     bool rightFoot = true;
 
     public:
@@ -55,10 +128,9 @@ private:
         int i=0;
         for(i=6;i<11;i++){
             glColor3f(0,0,0);
-            printf("HERE");
 
-            bool liftFoot = (i>5&&i<9&&rightFoot)|(i>8&&i<11&&!rightFoot);
-            float liftHeight = jumpHeight+(liftFoot?10:0);
+            bool liftFoot = (i > 5 && i < 9 && rightFoot) | (i > 8 && i < 11 && !rightFoot);
+            float liftHeight = jumpHeight + (liftFoot?10:0);
 
             glBegin(GL_POLYGON);
             glVertex2f(bco[i][0][0],bco[i][1][1]+liftHeight);
@@ -94,6 +166,7 @@ private:
 };
 
 Dinosour dino;
+Car car;
 
 float jumpHeight = 0;
 float MAX_HEIGHT = 240;
@@ -102,7 +175,7 @@ void init(){
 
     srand(time(NULL));
 
-    glutInitWindowSize(1080,720);
+    glutInitWindowSize(1280,720);
     glutCreateWindow("Dino game");
     glClearColor(1,.62,0.129,0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -301,6 +374,7 @@ void display(){
     }
 
     dino.renderBody();
+    car.render();
 
     glColor3f(.34,.52,.69);
     glBegin(GL_POLYGON);
