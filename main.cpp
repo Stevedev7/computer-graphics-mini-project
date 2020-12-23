@@ -11,7 +11,7 @@ enum PlayerState {STILL,RUN,JUMP,FALL,DEAD};
 
 class Car{
 private:
-    int marginBottom = 50, marginLeft = 1280;
+    float marginBottom = 50, marginLeft = 1280, size = 1;
     float carBody[18][2] = {
         {0, 0},
         {0, 3},
@@ -39,37 +39,9 @@ private:
         {60, 0, 12},
         {202.5, 2, 14}
     };
-
-public:
-    void render(){
-        glBegin(GL_POLYGON);
-        glColor3f(1, 0, 0);
-        for(int i = 0; i < 10; i ++){
-            glVertex2f(marginLeft + carBody[i][0], marginBottom + carBody[i][1]);
-        }
-        glEnd();
-        glBegin(GL_POLYGON);
-        glColor3f(0.65, 0.73, 0.96);
-        for(int i = 10; i < 14; i++){
-            glVertex2f(marginLeft + carBody[i][0], marginBottom + carBody[i][1]);
-        }
-        glEnd();
-        glBegin(GL_POLYGON);
-        glColor3f(0.65, 0.73, 0.96);
-        for(int i = 14; i < 18; i++){
-            glVertex2f(marginLeft + carBody[i][0], marginBottom + carBody[i][1]);
-        }
-        glEnd();
-        renderWheel(marginLeft + carWheels[0][0], marginBottom + carWheels[0][1], carWheels[0][2]);
-        renderWheel(marginLeft + carWheels[1][0], marginBottom + carWheels[1][1], carWheels[1][2]);
-        glEnd();
-        glFlush();
-    }
-
     void renderWheel(int x, int y, int r){
         float theta;
         glBegin(GL_POLYGON);
-        glColor3f(0,0,0);
         for(int i = 0; i < 360; i++){
             theta = i * (3.1416 / 180);
             glVertex2f(x + r * cos(theta), y + r * sin(theta));
@@ -77,6 +49,461 @@ public:
         glEnd();
     }
 
+public:
+    void render(){
+        glBegin(GL_POLYGON);
+        glColor3f(1, 0, 0);
+        for(int i = 0; i < 10; i ++){
+            glVertex2f(marginLeft + (carBody[i][0] * size), marginBottom + (carBody[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(4);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 10; i ++){
+            glVertex2f(marginLeft + (carBody[i][0] * size), marginBottom + (carBody[i][1] * size));
+        }
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(0.65, 0.73, 0.96);
+        for(int i = 10; i < 14; i++){
+            glVertex2f(marginLeft + (carBody[i][0] * size), marginBottom + (carBody[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(4);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 10; i < 14; i ++){
+            glVertex2f(marginLeft + (carBody[i][0] * size), marginBottom + (carBody[i][1] * size));
+        }
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(0.65, 0.73, 0.96);
+        for(int i = 14; i < 18; i++){
+            glVertex2f(marginLeft + (carBody[i][0] * size), marginBottom + (carBody[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(4);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 14; i < 18; i++){
+            glVertex2f(marginLeft + (carBody[i][0] * size), marginBottom + (carBody[i][1] * size));
+        }
+        glEnd();
+        glColor3f(0,0,0);
+        renderWheel(marginLeft + (carWheels[0][0] * size), marginBottom + (carWheels[0][1] * size), (carWheels[0][2] * size));
+        renderWheel(marginLeft + (carWheels[1][0] * size), marginBottom + (carWheels[1][1] * size), (carWheels[1][2] * size));
+        glColor3f(1, 1, 1);
+        renderWheel(marginLeft + (carWheels[0][0] * size), marginBottom + (carWheels[0][1] * size), (carWheels[0][2] * size * 0.6));
+        renderWheel(marginLeft + (carWheels[1][0] * size), marginBottom + (carWheels[1][1] * size), (carWheels[1][2] * size * 0.6));
+        glEnd();
+        glFlush();
+    }
+
+};
+
+
+class Aeroplane{
+
+private:
+    float marginBottom = 50, marginLeft = 10, size = 0.5;
+    float body[71][2] = {
+        {25, 144},
+        {27, 148},
+        {28, 151},
+        {31, 152},
+        {37, 158},
+        {42, 160},
+        {51, 168},
+        {58, 170},
+        {83, 180},
+        {100, 187},
+        {110, 195},
+        {119, 202},
+        {126, 205},
+        {134, 209},
+        {144, 214},
+        {154, 217},
+        {162, 219},
+        {165, 220},
+        {169, 220},
+        {175, 220},
+        {181, 220},
+        {188, 219},
+        {200, 218},
+        {210, 216},
+        {216, 215},
+        {223, 213},
+        {231, 211},
+        {238, 210},
+        {245, 209},
+        {252, 206},
+        {264, 201},
+        {321, 196},
+        {431, 186},
+        {595, 180},
+        {749, 171},
+        {753, 171},
+        {756, 168},
+        {758, 165},
+        {759, 163},
+        {759, 129},
+        {757, 126},
+        {755, 124},
+        {750, 122},
+        {740, 121},
+        {729, 118},
+        {722, 117},
+        {714, 116},
+        {706, 115},
+        {696, 115},
+        {375, 111},
+        {351, 111},
+        {317, 112},
+        {247, 113},
+        {207, 114},
+        {170, 116},
+        {145, 118},
+        {129, 119},
+        {108, 120},
+        {99, 122},
+        {89, 123},
+        {72, 124},
+        {65, 126},
+        {57, 127},
+        {51, 128},
+        {46, 130},
+        {40, 131},
+        {34, 133},
+        {31, 136},
+        {27, 138},
+        {26, 142},
+        {25, 144}
+    };
+
+
+    float windshield[47][2] = {
+        {264, 201},
+        {244, 194},
+        {237, 192},
+        {231, 190},
+        {225, 188},
+        {220, 187},
+        {214, 186},
+        {204, 184},
+        {199, 182},
+        {193, 181},
+        {186, 180},
+        {174, 179},
+        {164, 178},
+        {159, 179},
+        {148, 178},
+        {146, 179},
+        {134, 180},
+        {130, 181},
+        {126, 182},
+        {124, 183},
+        {115, 183},
+        {113, 184},
+        {110, 185},
+        {107, 186},
+        {104, 187},
+        {100, 187},
+        {110, 195},
+        {119, 202},
+        {126, 205},
+        {134, 209},
+        {144, 214},
+        {154, 217},
+        {162, 219},
+        {165, 220},
+        {169, 220},
+        {175, 220},
+        {181, 220},
+        {188, 219},
+        {200, 218},
+        {210, 216},
+        {216, 215},
+        {223, 213},
+        {231, 211},
+        {238, 210},
+        {245, 209},
+        {252, 206},
+        {264, 201}
+    };
+
+    float wheelbox[6][2] = {
+        {143, 118},
+        {143, 96},
+        {143, 94},
+        {203, 91},
+        {205, 93},
+        {206, 112}
+    };
+
+    float wheelShaft[4][2] = {
+        {168, 91},
+        {168, 71},
+        {176, 71},
+        {176, 91},
+    };
+
+    float frontWheel [2][3] = {
+        {171, 63, 16},
+        {171, 63, 6} 
+    };
+
+    float fin[7][2] = {
+        {615, 181},
+        {695, 306},
+        {752, 302},
+        {751, 286},
+        {727, 287},
+        {681, 176},
+        {736, 172}
+    };
+
+    float wings[24][2] = {
+        {270, 148},
+        {338, 149},
+        {398, 150},
+        {562, 148},
+        {589, 147},
+        {628, 145},
+        {646, 146},
+        {665, 144},
+        {689, 142},
+        {698, 74},
+        {689, 72},
+        {646, 74},
+        {549, 74},
+        {546, 76},
+        {543, 77},
+        {545, 79},
+        {549, 81},
+        {555, 82},
+        {565, 84},
+        {581, 85},
+        {599, 84},
+        {627, 82},
+        {651, 80},
+        {672, 78}
+    };
+
+
+    float engine[19][2] = {
+        {386, 117},
+        {541, 76},
+        {591, 73},
+        {553, 71},
+        {423, 71},
+        {409, 71},
+        {401, 74},
+        {393, 76},
+        {387, 78},
+        {383, 80},
+        {377, 84},
+        {373, 87},
+        {371, 91},
+        {371, 97},
+        {372, 103},
+        {375, 108},
+        {378, 112},
+        {381, 114},
+        {383, 116}
+
+    };
+
+    float rearWheelShaft[4][2] = {
+        {571, 70},
+        {571, 53},
+        {578, 53},
+        {578, 70}
+
+    };
+
+    float rearWheel[2][3] = {
+        {572, 50, 16},
+        {572, 50, 6}
+
+    };
+
+    float exhaust[4][2] = {
+        {760, 166},
+        {790, 160},
+        {790, 135},
+        {759, 127},
+    };
+
+    float rearFlap[16][2] = {
+        {597, 160},
+        {601, 163},
+        {608, 164},
+        {615, 166},
+        {637, 166},
+        {650, 167},
+        {694, 162},
+        {717, 160},
+        {739, 158},
+        {701, 156},
+        {667, 155},
+        {623, 156},
+        {612, 157},
+        {605, 157},
+        {601, 156},
+        {598, 158},
+    };
+
+    void renderBody(){
+        glBegin(GL_POLYGON);
+        glColor3f(0.56640625, 0.56640625, 0.56640625);
+        for(int i = 0; i < 71; i ++){
+            glVertex2f(marginLeft + (body[i][0] * size), marginBottom + (body[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 71; i ++){
+            glVertex2f(marginLeft + (body[i][0] * size), marginBottom + (body[i][1] * size));
+        }
+        glEnd();
+
+        //exhaust
+        glBegin(GL_POLYGON);
+        glColor3f(0.265625, 0.265625, 0.265625);
+        for(int i = 0; i < 4; i ++){
+            glVertex2f(marginLeft + (exhaust[i][0] * size), marginBottom + (exhaust[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 4; i ++){
+            glVertex2f(marginLeft + (exhaust[i][0] * size), marginBottom + (exhaust[i][1] * size));
+        }
+        glEnd();
+    }
+
+    void renderWindShield(){
+        glBegin(GL_POLYGON);
+        glColor3f(0.58203125, 0.5234375, 0.36328125);
+        for(int i = 0; i < 47; i ++){
+            glVertex2f(marginLeft + (windshield[i][0] * size), marginBottom + (windshield[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 47; i ++){
+            glVertex2f(marginLeft + (windshield[i][0] * size), marginBottom + (windshield[i][1] * size));
+        }
+        glEnd();
+
+    }
+
+    void renderFin(){
+        glBegin(GL_POLYGON);
+        glColor3f(0.56640625, 0.56640625, 0.56640625);
+        for(int i = 0; i < 6; i ++){
+            glVertex2f(marginLeft + (fin[i][0] * size), marginBottom + (fin[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 6; i ++){
+            glVertex2f(marginLeft + (fin[i][0] * size), marginBottom + (fin[i][1] * size));
+        }
+        glEnd();
+
+        glBegin(GL_POLYGON);
+        glColor3f(0.53125, 0.53125, 0.53125);
+        for(int i = 3; i < 7; i ++){
+            glVertex2f(marginLeft + (fin[i][0] * size), marginBottom + (fin[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 3; i < 7; i ++){
+            glVertex2f(marginLeft + (fin[i][0] * size), marginBottom + (fin[i][1] * size));
+        }
+        glEnd();
+    }
+
+    void renderWings(){
+        glBegin(GL_POLYGON);
+        glColor3f(0.484375, 0.484375, 0.484375);
+        for(int i = 0; i < 15; i ++){
+            glVertex2f(marginLeft + (wings[i][0] * size), marginBottom + (wings[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 15; i ++){
+            glVertex2f(marginLeft + (wings[i][0] * size), marginBottom + (wings[i][1] * size));
+        }
+        glEnd();
+
+        glBegin(GL_POLYGON);
+        glColor3f(0.3125, 0.3125, 0.3125);
+        for(int i = 9; i < 24; i ++){
+            glVertex2f(marginLeft + (wings[i][0] * size), marginBottom + (wings[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 9; i < 24; i ++){
+            glVertex2f(marginLeft + (wings[i][0] * size), marginBottom + (wings[i][1] * size));
+        }
+        glEnd();
+
+        // rear flaps
+
+        glBegin(GL_POLYGON);
+        glColor3f(0.3125, 0.3125, 0.3125);
+        for(int i = 0; i < 16; i ++){
+            glVertex2f(marginLeft + (rearFlap[i][0] * size), marginBottom + (rearFlap[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 16; i ++){
+            glVertex2f(marginLeft + (rearFlap[i][0] * size), marginBottom + (rearFlap[i][1] * size));
+        }
+        glEnd();
+    }
+
+    void renderEngine(){
+        glBegin(GL_POLYGON);
+        glColor3f(0, 0, 1);
+        for(int i = 0; i < 19; i ++){
+            glVertex2f(marginLeft + (engine[i][0] * size), marginBottom + (engine[i][1] * size));
+        }
+        glEnd();
+        glLineWidth(3);
+        glBegin(GL_LINE_LOOP);
+        glColor3f(0, 0, 0);
+        for(int i = 0; i < 19; i ++){
+            glVertex2f(marginLeft + (engine[i][0] * size), marginBottom + (engine[i][1] * size));
+        }
+        glEnd();
+    }
+
+public:
+    void render(){
+        renderBody();
+        renderWindShield();
+        renderFin();
+        renderWings();
+        // renderEngine();
+        glFlush();
+    }
+    
 };
 
 class Dinosour{
