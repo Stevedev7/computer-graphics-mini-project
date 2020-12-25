@@ -11,7 +11,7 @@ enum PlayerState {STILL,RUN,JUMP,FALL,DEAD};
 
 class Car{
 private:
-    float marginBottom = 50, marginLeft = 1280, size = 1;
+    float marginBottom = 50, marginLeft = 840, size = 1;
     float carBody[18][2] = {
         {0, 0},
         {0, 3},
@@ -97,7 +97,6 @@ public:
         renderWheel(marginLeft + (carWheels[0][0] * size), marginBottom + (carWheels[0][1] * size), (carWheels[0][2] * size * 0.6));
         renderWheel(marginLeft + (carWheels[1][0] * size), marginBottom + (carWheels[1][1] * size), (carWheels[1][2] * size * 0.6));
         glEnd();
-        glFlush();
     }
 
 };
@@ -106,7 +105,7 @@ public:
 class Aeroplane{
 
 private:
-    float marginBottom = 50, marginLeft = 10, size = 0.5;
+    float marginBottom = 50, marginLeft = 640, size = 0.5;
     float body[71][2] = {
         {25, 144},
         {27, 148},
@@ -594,6 +593,7 @@ private:
 
 Dinosour dino;
 Car car;
+Aeroplane aero;
 
 float jumpHeight = 0;
 float MAX_HEIGHT = 240;
@@ -801,7 +801,7 @@ void display(){
     }
 
     dino.renderBody();
-    car.render();
+    
 
     glColor3f(.34,.52,.69);
     glBegin(GL_POLYGON);
@@ -824,6 +824,9 @@ void display(){
         glEnd();
 
     }
+    
+    car.render();
+    aero.render();
     glFlush();
 }
 
