@@ -1,10 +1,12 @@
-// #include<windows.h>
+#include<windows.h>
 #include <GL/glut.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 // #include <conio.h>
 #include <time.h>
+
+int treeLengths[] = {160,130,180,200};
 
 enum GameState {START,RUNNING,COLLIDED};
 enum PlayerState {STILL,RUN,JUMP,FALL,DEAD};
@@ -249,7 +251,7 @@ private:
 
     float frontWheel [2][3] = {
         {171, 63, 16},
-        {171, 63, 6} 
+        {171, 63, 6}
     };
 
     float fin[7][2] = {
@@ -502,8 +504,9 @@ public:
         // renderEngine();
         glFlush();
     }
-    
+
 };
+
 
 class Dinosour{
 
@@ -782,26 +785,56 @@ void display(){
 
     glColor3f(.44,0.20,0.27);
 
-    int buildingStart = -30;
-    int buildingHeight = 0;
-    int buildingWidth = 0;
+    glBegin(GL_POLYGON);
+    glVertex2f(1080,200);
+    glVertex2f(-30,200);
+    glVertex2f(-30,20);
+    glVertex2f(1080,20);
+    glEnd();
 
-    for(int i=0;buildingStart<=1080;++i){
-        buildingWidth = (10 + rand()% 50);
-        buildingHeight = (100 + rand()% 100);
 
-        glBegin(GL_POLYGON);
-        glVertex2f(buildingStart,20);
-        glVertex2f(buildingStart+buildingWidth,20);
-        glVertex2f(buildingStart+buildingWidth,buildingHeight);
-        glVertex2f(buildingStart,buildingHeight);
+    glBegin(GL_POLYGON);
+    glVertex2f(100,200);
+    glVertex2f(320,200);
+    glVertex2f(320,210);
+    glVertex2f(100,210);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glVertex2f(120,210);
+    glVertex2f(260,210);
+    glVertex2f(260,220);
+    glVertex2f(120,220);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glVertex2f(640,200);
+    glVertex2f(960,200);
+    glVertex2f(960,210);
+    glVertex2f(640,210);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glVertex2f(680,210);
+    glVertex2f(860,210);
+    glVertex2f(860,220);
+    glVertex2f(680,220);
+    glEnd();
+
+    int i;
+    for(i=-40;i<=1100;i+=23){
+        int height = treeLengths[i%4];
+
+        glColor3f(.02,0.4,0.17);
+        glBegin(GL_TRIANGLES);
+        glVertex2f(i-20,15);
+        glVertex2f(i+20,15);
+        glVertex2f(i,height);
         glEnd();
-
-        buildingStart += buildingWidth;
     }
 
     dino.renderBody();
-    
+
 
     glColor3f(.34,.52,.69);
     glBegin(GL_POLYGON);
@@ -824,7 +857,7 @@ void display(){
         glEnd();
 
     }
-    
+
     car.render();
     aero.render();
     glFlush();

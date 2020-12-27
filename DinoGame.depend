@@ -333,3 +333,14 @@
 1512590989 c:\mingw\include\conio.h
 	<_mingw.h>
 
+1609054074 source:c:\users\arvik\desktop\computer-graphics-project\main.cpp
+	<windows.h>
+	<GL/glut.h>
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<time.h>
+
+1512590989 c:\mingw\include\math.h
+	<_mingw.h>
+
