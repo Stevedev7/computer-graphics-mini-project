@@ -542,7 +542,7 @@ class BackgroundGraphics{
     {{3},{510,320},{640,310}},{{3},{560,330},{610,320}},
     {{4},{1080,200},{-30,20}},{{4},{100,200},{320,210}},{{4},{120,210},{260,220}},{{4},{640,200},{960,210}},{{4},{680,210},{860,220}}
     };
-    float leftMargin = -200;
+    float leftMargin = -1080;
 
     void renderTree(){
         int i;
@@ -557,7 +557,7 @@ class BackgroundGraphics{
             glEnd();
         }
 
-        leftMargin = leftMargin<-200?-40:leftMargin-.1;
+        leftMargin = leftMargin<-1080?-96:leftMargin-.1;
     }
 
     void renderRoad(){
@@ -570,7 +570,7 @@ class BackgroundGraphics{
         glVertex2f(1080,20);
         glEnd();
 
-        float markerStart = -70;
+        float markerStart = leftMargin;
 
         for(int i=0;markerStart<=1080;i+=1,markerStart+=75)
         {
