@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <thread>
 // #include <conio.h>
 #include <time.h>
 
@@ -11,7 +12,7 @@ enum PlayerState {STILL,RUN,JUMP,FALL,DEAD};
 
 class Car{
 private:
-    float marginBottom = 50, marginLeft = 840, size = 1;
+    float marginBottom = 30, marginLeft = 10000, size = 0.8;
     float carBody[18][2] = {
         {0, 0},
         {0, 3},
@@ -99,13 +100,21 @@ public:
         glEnd();
     }
 
+    void setMargin(float margin){
+        marginLeft = margin;
+    }
+
+    float getMargin(){
+        return marginLeft;
+    }
+
 };
 
 
 class Aeroplane{
 
 private:
-    float marginBottom = 50, marginLeft = 640, size = 0.5;
+    float marginBottom = 100, marginLeft = 6000, size = 0.2;
     float body[71][2] = {
         {25, 144},
         {27, 148},
@@ -502,7 +511,18 @@ public:
         // renderEngine();
         glFlush();
     }
+
+    void setMarginBottom(float margin){
+        marginBottom = margin;
+    }
     
+    void setMarginLeft(float margin){
+        marginLeft = margin;
+    }
+    
+    float getMarginLeft(){
+        return marginLeft;
+    }
 };
 
 class Dinosour{
@@ -593,7 +613,9 @@ private:
 
 Dinosour dino;
 Car car;
-Aeroplane aero;
+Aeroplane aeroplane;
+
+int speed = 1;
 
 float jumpHeight = 0;
 float MAX_HEIGHT = 240;
@@ -801,7 +823,8 @@ void display(){
     }
 
     dino.renderBody();
-    
+    car.render();
+    aeroplane.render();
 
     glColor3f(.34,.52,.69);
     glBegin(GL_POLYGON);
@@ -813,7 +836,36 @@ void display(){
 
     float markerStart = -70;
 
-    for(int i=0;markerStart<=1080;i+=1,markerStart+=75)
+    for(int i=0;markerStart<=1080;i+=1,markerStart+=75){
+        glColor3f(1,1,1);
+        glBegin(GL_POLYGON);
+        glVertex2f(20+markerStart,-7);
+        glVertex2f(markerStart+75,-7);
+        glVertex2f(markerStart+75,-3);
+        glVertex2f(20+markerStart,-3);
+        glEnd();
+
+    }
+
+    //Spawn obstacles
+
+    for(int i=0;i < 1280; i ++){
+        if(aeroplane.getMarginLeft() <=  (-760 * 0.2)){
+            aeroplane.setMarginLeft(2000 + (rand() % 1000));
+            int top = rand() % 2;
+            top == 0 ? aeroplane.setMarginBottom(100) : aeroplane.setMarginBottom(200);
+        }else {
+            aeroplane.setMarginLeft(aeroplane.getMarginLeft() - (0.002 * speed));
+        }
+
+        if(car.getMargin() <= -290){
+            car.setMargin(2000 + (rand() % 1000));
+        } else{
+            car.setMargin(car.getMargin() - (0.002 * speed));
+        }
+        
+    }
+
     {
         glColor3f(1,1,1);
         glBegin(GL_POLYGON);
@@ -824,9 +876,7 @@ void display(){
         glEnd();
 
     }
-    
-    car.render();
-    aero.render();
+
     glFlush();
 }
 
@@ -837,7 +887,7 @@ void keyboard(unsigned char key,int x,int y){
     }
 
     if(dino.getPlayerState() == STILL){
-            dino.setPlayerState(RUN);
+        dino.setPlayerState(RUN);
     }
 }
 
@@ -864,6 +914,7 @@ void idle(){
 
     if(dino.getPlayerState() == RUN)
         glutPostRedisplay();
+
 }
 
 int main(int argc,char **argv){
