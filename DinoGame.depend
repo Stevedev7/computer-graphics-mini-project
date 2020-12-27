@@ -333,3 +333,15 @@
 1512590989 c:\mingw\include\conio.h
 	<_mingw.h>
 
+1609083641 source:c:\users\arvik\desktop\cg-pro\main.cpp
+	<windows.h>
+	<GL/glut.h>
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<thread>
+	<time.h>
+
+1512590989 c:\mingw\include\math.h
+	<_mingw.h>
+
