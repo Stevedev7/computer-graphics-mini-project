@@ -1,4 +1,4 @@
-#include<windows.h>
+// #include<windows.h>
 #include <GL/glut.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -746,7 +746,23 @@ void display(){
         if(car.getMargin() <= -290){
             car.setMargin(2000 + (rand() % 1000));
         } else{
+
+            //Car is 183 pixels wide and 30 pixels high
+            //The bottom margin of the car remains constant throughout the game => 30 pixels
+            if( 60 > dino.MIN_BOTTOM + dino.getJumpHeight() &&
+                30 < dino.MAX_TOP + dino.getJumpHeight() &&
+                car.getMargin() <= dino.MAX_RIGHT &&
+                car.getMargin() + 183 >= dino.MIN_LEFT){
+                dino.setPlayerState(STILL);
+            }
             car.setMargin(car.getMargin() - (0.002 * speed));
+        }
+
+        //Making sure that the car and the aeroplane do not spawn really close to each other
+        if(fabs(car.getMargin() -aeroplane.getMarginLeft()) <= 200){
+            srand(time(0));
+            car.setMargin(2000 + (rand() % 1000));
+            aeroplane.setMarginLeft(2000 + (rand() % 1000));
         }
 
     }
