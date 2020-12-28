@@ -3,15 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-// #include <conio.h>
+#include <thread>
 #include <time.h>
 
+
+int treeLengths[] = {160,130,180,200};
 enum GameState {START,RUNNING,COLLIDED};
 enum PlayerState {STILL,RUN,JUMP,FALL,DEAD};
 
 class Car{
 private:
-    float marginBottom = 50, marginLeft = 1280, size = 1;
+    float marginBottom = 30, marginLeft = 10000, size = 0.8;
     float carBody[18][2] = {
         {0, 0},
         {0, 3},
@@ -97,7 +99,14 @@ public:
         renderWheel(marginLeft + (carWheels[0][0] * size), marginBottom + (carWheels[0][1] * size), (carWheels[0][2] * size * 0.6));
         renderWheel(marginLeft + (carWheels[1][0] * size), marginBottom + (carWheels[1][1] * size), (carWheels[1][2] * size * 0.6));
         glEnd();
-        glFlush();
+    }
+
+    void setMargin(float margin){
+        marginLeft = margin;
+    }
+
+    float getMargin(){
+        return marginLeft;
     }
 
 };
@@ -106,7 +115,7 @@ public:
 class Aeroplane{
 
 private:
-    float marginBottom = 50, marginLeft = 10, size = 0.5;
+    float marginBottom = 100, marginLeft = 6000, size = 0.2;
     float body[71][2] = {
         {25, 144},
         {27, 148},
@@ -250,7 +259,7 @@ private:
 
     float frontWheel [2][3] = {
         {171, 63, 16},
-        {171, 63, 6} 
+        {171, 63, 6}
     };
 
     float fin[7][2] = {
@@ -503,8 +512,99 @@ public:
         // renderEngine();
         glFlush();
     }
-    
+
+    void setMarginBottom(float margin){
+        marginBottom = margin;
+    }
+
+    void setMarginLeft(float margin){
+        marginLeft = margin;
+    }
+
+    float getMarginLeft(){
+        return marginLeft;
+    }
+
+    float getMarginBottom(){
+        return marginBottom;
+    }
 };
+
+
+class BackgroundGraphics{
+    // {{},{},{}}
+    float bcol[5][3] = {{1,0.55,0.156},{1,.97,.87},{1,0.49,0.17},{1,0.35,0.22},{.44,0.20,0.27}};
+    float bco[28][3][2] = {{{0},{-30,500},{1080,400}},{{0},{0,510},{140,510}},{{0},{20,520},{100,510}},{{0},{40,530},{80,520}},{{0},{350,510},{460,500}},
+    {{0},{360,520},{380,510}},{{0},{420,520},{440,510}},{{0},{700,510},{960,500}},{{0},{840,520},{920,510}},{{0},{720,520},{800,510}},
+    {{1},{470,560},{540,630}},
+    {{2},{100,400},{320,410}},{{2},{120,410},{260,420}},{{2},{640,400},{960,410}},{{2},{680,410},{860,420}},{{2},{-30,400},{1080,300}},
+    {{3},{-30,300},{1080,100}},{{3},{-30,330},{40,300}},{{3},{-30,320},{80,300}},{{3},{-30,310},{110,300}},{{3},{500,310},{660,300}},
+    {{3},{510,320},{640,310}},{{3},{560,330},{610,320}},
+    {{4},{1080,200},{-30,20}},{{4},{100,200},{320,210}},{{4},{120,210},{260,220}},{{4},{640,200},{960,210}},{{4},{680,210},{860,220}}
+    };
+    float leftMargin = -1080;
+
+    void renderTree(){
+        int i;
+        for(i=leftMargin;i<=1400;i+=43){
+            int height = treeLengths[i%4];
+
+            glColor3f(.02,0.4,0.17);
+            glBegin(GL_TRIANGLES);
+            glVertex2f(i-30,15);
+            glVertex2f(i+30,15);
+            glVertex2f(i,height);
+            glEnd();
+        }
+
+        leftMargin = leftMargin<-1080?-96:leftMargin-.1;
+    }
+
+    void renderRoad(){
+
+        glColor3f(.34,.52,.69);
+        glBegin(GL_POLYGON);
+        glVertex2f(1080,-30);
+        glVertex2f(-30,-30);
+        glVertex2f(-30,20);
+        glVertex2f(1080,20);
+        glEnd();
+
+        float markerStart = leftMargin;
+
+        for(int i=0;markerStart<=1080;i+=1,markerStart+=75)
+        {
+            glColor3f(1,1,1);
+            glBegin(GL_POLYGON);
+            glVertex2f(20+markerStart,-7);
+            glVertex2f(markerStart+75,-7);
+            glVertex2f(markerStart+75,-3);
+            glVertex2f(20+markerStart,-3);
+            glEnd();
+
+        }
+    }
+
+    public:
+    void render(){
+        for(int i=0;i<28;++i)
+        {
+            glColor3fv(bcol[(int)bco[i][0][0]]);
+            glBegin(GL_POLYGON);
+            glVertex2f(bco[i][1][0],bco[i][2][1]);
+            glVertex2f(bco[i][1][0],bco[i][1][1]);
+            glVertex2f(bco[i][2][0],bco[i][1][1]);
+            glVertex2f(bco[i][2][0],bco[i][2][1]);
+            glEnd();
+        }
+
+        renderTree();
+        renderRoad();
+    }
+
+
+};
+
 
 class Dinosour{
 
@@ -521,6 +621,8 @@ private:
     bool rightFoot = true;
 
     public:
+
+    float MIN_LEFT = 50,MIN_BOTTOM = 20,MAX_TOP=150,MAX_RIGHT=150;
 
     void renderBody(){
     int i;
@@ -592,11 +694,16 @@ private:
     }
 };
 
+
 Dinosour dino;
 Car car;
+Aeroplane aeroplane;
+BackgroundGraphics bg;
+
+float speed = .4;
 
 float jumpHeight = 0;
-float MAX_HEIGHT = 240;
+float MAX_HEIGHT = 280;
 
 void init(){
 
@@ -610,231 +717,76 @@ void init(){
 }
 
 void display(){
-
-    glColor3f(1,0.55,0.156);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(-30,500);
-    glVertex2f(1080,500);
-    glVertex2f(1080,400);
-    glVertex2f(-30,400);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(0,510);
-    glVertex2f(140,510);
-    glVertex2f(140,500);
-    glVertex2f(0,500);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(20,520);
-    glVertex2f(100,520);
-    glVertex2f(100,510);
-    glVertex2f(20,510);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(40,530);
-    glVertex2f(80,530);
-    glVertex2f(80,520);
-    glVertex2f(40,520);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(350,510);
-    glVertex2f(460,510);
-    glVertex2f(460,500);
-    glVertex2f(350,500);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(360,520);
-    glVertex2f(380,520);
-    glVertex2f(380,510);
-    glVertex2f(360,510);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(420,520);
-    glVertex2f(440,520);
-    glVertex2f(440,510);
-    glVertex2f(420,510);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(700,510);
-    glVertex2f(960,510);
-    glVertex2f(960,500);
-    glVertex2f(700,500);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(840,520);
-    glVertex2f(920,520);
-    glVertex2f(920,510);
-    glVertex2f(840,510);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(720,520);
-    glVertex2f(800,520);
-    glVertex2f(800,510);
-    glVertex2f(720,510);
-    glEnd();
-
-    glColor3f(1,.97,.87);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(470,560);
-    glVertex2f(540,560);
-    glVertex2f(540,630);
-    glVertex2f(470,630);
-    glEnd();
-
-    glColor3f(1,0.49,0.17);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(100,400);
-    glVertex2f(320,400);
-    glVertex2f(320,410);
-    glVertex2f(100,410);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(120,410);
-    glVertex2f(260,410);
-    glVertex2f(260,420);
-    glVertex2f(120,420);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(640,400);
-    glVertex2f(960,400);
-    glVertex2f(960,410);
-    glVertex2f(640,410);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(680,410);
-    glVertex2f(860,410);
-    glVertex2f(860,420);
-    glVertex2f(680,420);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(-30,400);
-    glVertex2f(1080,400);
-    glVertex2f(1080,300);
-    glVertex2f(-30,300);
-    glEnd();
-
-    glColor3f(1,0.35,0.22);
-
-    glBegin(GL_POLYGON);
-    glVertex2f(-30,300);
-    glVertex2f(1080,300);
-    glVertex2f(1080,100);
-    glVertex2f(-30,100);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(-30,330);
-    glVertex2f(40,330);
-    glVertex2f(40,300);
-    glVertex2f(-30,300);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(-30,320);
-    glVertex2f(80,320);
-    glVertex2f(80,300);
-    glVertex2f(-30,300);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(-30,310);
-    glVertex2f(110,310);
-    glVertex2f(110,300);
-    glVertex2f(-30,300);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(500,310);
-    glVertex2f(660,310);
-    glVertex2f(660,300);
-    glVertex2f(500,300);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(510,320);
-    glVertex2f(640,320);
-    glVertex2f(640,310);
-    glVertex2f(510,310);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glVertex2f(560,330);
-    glVertex2f(610,330);
-    glVertex2f(610,320);
-    glVertex2f(560,320);
-    glEnd();
-
-    glColor3f(.44,0.20,0.27);
-
-    int buildingStart = -30;
-    int buildingHeight = 0;
-    int buildingWidth = 0;
-
-    for(int i=0;buildingStart<=1080;++i){
-        buildingWidth = (10 + rand()% 50);
-        buildingHeight = (100 + rand()% 100);
-
-        glBegin(GL_POLYGON);
-        glVertex2f(buildingStart,20);
-        glVertex2f(buildingStart+buildingWidth,20);
-        glVertex2f(buildingStart+buildingWidth,buildingHeight);
-        glVertex2f(buildingStart,buildingHeight);
-        glEnd();
-
-        buildingStart += buildingWidth;
-    }
-
+    bg.render();
     dino.renderBody();
-    car.render();
 
-    glColor3f(.34,.52,.69);
-    glBegin(GL_POLYGON);
-    glVertex2f(1080,-30);
-    glVertex2f(-30,-30);
-    glVertex2f(-30,20);
-    glVertex2f(1080,20);
-    glEnd();
 
-    float markerStart = -70;
+    for(int i=0;i < 1280; i ++){
+        if(aeroplane.getMarginLeft() <=  (-760 * 0.2)){
+            aeroplane.setMarginLeft(2000 + (rand() % 1000));
+            int top = rand() % 2;
+            top == 0 ? aeroplane.setMarginBottom(100) : aeroplane.setMarginBottom(200);
+        }else {
 
-    for(int i=0;markerStart<=1080;i+=1,markerStart+=75)
-    {
-        glColor3f(1,1,1);
-        glBegin(GL_POLYGON);
-        glVertex2f(20+markerStart,-7);
-        glVertex2f(markerStart+75,-7);
-        glVertex2f(markerStart+75,-3);
-        glVertex2f(20+markerStart,-3);
-        glEnd();
+            // here aeroplane is assumed to be 20 units high and 100 units wide
+
+            if( aeroplane.getMarginBottom() + 20 > dino.MIN_BOTTOM + dino.getJumpHeight() &&
+                aeroplane.getMarginBottom() < dino.MAX_TOP + dino.getJumpHeight() &&
+                aeroplane.getMarginLeft() <= dino.MAX_RIGHT &&
+                aeroplane.getMarginLeft() + 100>= dino.MIN_LEFT){
+                dino.setPlayerState(STILL);
+            }
+
+            aeroplane.setMarginLeft(aeroplane.getMarginLeft() - (0.002 * speed));
+
+
+        }
+
+
+        if(car.getMargin() <= -290){
+            car.setMargin(2000 + (rand() % 1000));
+        } else{
+
+            //Car is 183 pixels wide and 30 pixels high
+            //The bottom margin of the car remains constant throughout the game => 30 pixels
+            if( 60 > dino.MIN_BOTTOM + dino.getJumpHeight() &&
+                30 < dino.MAX_TOP + dino.getJumpHeight() &&
+                car.getMargin() <= dino.MAX_RIGHT &&
+                car.getMargin() + 183 >= dino.MIN_LEFT){
+                dino.setPlayerState(STILL);
+            }
+            car.setMargin(car.getMargin() - (0.002 * speed));
+        }
+
+        //Making sure that the car and the aeroplane do not spawn really close to each other
+        if(fabs(car.getMargin() -aeroplane.getMarginLeft()) <= 200){
+            srand(time(0));
+            car.setMargin(2000 + (rand() % 1000));
+            aeroplane.setMarginLeft(2000 + (rand() % 1000));
+        }
 
     }
+
+    car.render();
+    aeroplane.render();
+
     glFlush();
 }
 
 void keyboard(unsigned char key,int x,int y){
+    if(key == ' ' && dino.getPlayerState() == STILL){
+        dino.setJumpHeight(0);
+        aeroplane.setMarginLeft(6000);
+        car.setMargin(6000);
+        dino.setPlayerState(RUN);
+    }
 
     if(key == ' ' && dino.getPlayerState() != JUMP && dino.getPlayerState() != FALL){
         dino.setPlayerState(JUMP);
     }
 
     if(dino.getPlayerState() == STILL){
-            dino.setPlayerState(RUN);
+        dino.setPlayerState(RUN);
     }
 }
 
@@ -861,6 +813,7 @@ void idle(){
 
     if(dino.getPlayerState() == RUN)
         glutPostRedisplay();
+
 }
 
 int main(int argc,char **argv){
